@@ -44,25 +44,33 @@ never a dead end. A hidden honeypot field filters most bots.
 
 ## Deploy on GitHub Pages
 
-The workflow in [.github/workflows/deploy.yml](.github/workflows/deploy.yml)
-builds on every push to `main` and publishes `dist/` to Pages.
+The site is published from the `gh-pages` branch. One command builds it and
+updates that branch without touching `main`:
+
+```sh
+npm run deploy
+```
+
+The script picks the base path itself: `/<repo>/` for a project page, `/` when
+[public/CNAME](public/CNAME) exists.
+
+One-time setup:
 
 1. Push this repository to GitHub.
-2. In **Settings → Pages**, set **Source** to **GitHub Actions**.
+2. In **Settings → Pages**, set **Source** to **Deploy from a branch**, branch
+   `gh-pages`, folder `/ (root)`.
 3. The site appears at `https://<user>.github.io/<repo>/`.
 
-The workflow picks the correct base path automatically: `/<repo>/` for a
-project page, `/` when the repo contains `public/CNAME`.
+If GitHub Actions is available on your account, an alternative is a Pages
+workflow that runs on push; the `npm run deploy` flow above needs no Actions
+minutes and works on any account.
 
 ## Custom domain
 
-1. Add your domain in **Settings → Pages → Custom domain** (this writes a
-   `CNAME` file into the repo) or commit `public/CNAME` yourself with the bare
-   hostname, e.g. `yourname.com`.
+1. Put the bare hostname, e.g. `yourname.com`, in `public/CNAME`.
 2. At your DNS provider, point the apex at GitHub Pages with `A` records to
    `185.199.108.153`, `185.199.109.153`, `185.199.110.153`,
    `185.199.111.153`, and `www` at `<user>.github.io` with a `CNAME` record.
-3. Tick **Enforce HTTPS** once the certificate is issued.
-
-If the CNAME file is added after the first deploy, push any commit so the build
-runs again with the new base path.
+3. Add the domain in **Settings → Pages → Custom domain** and tick **Enforce
+   HTTPS** once the certificate is issued.
+4. Run `npm run deploy` again so the build uses the domain's base path (`/`).
